@@ -1,4 +1,4 @@
-package algorithm.custom.bfs.C001_자물쇠회전;
+package algorithm.custom.greedy.C001_자물쇠회전;
 
 import org.junit.jupiter.api.Test;
 
