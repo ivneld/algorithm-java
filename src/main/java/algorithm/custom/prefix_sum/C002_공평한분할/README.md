@@ -23,23 +23,34 @@ K=4: [1,2,3,4] | [10]  → 합 10
 반환값: 1
 ```
 
-## 접근 방식
-
-네 구간합이 모두 같으려면 아래 세 조건이 동시에 성립해야 한다.
-
+## 정답
 ```
-2 * prefixA == totalA
-2 * prefixB == totalB
-prefixA == prefixB
+function solveFairSplit(A, B):
+    n = length(A)
+    
+    // 1. 각 배열의 전체 합(Total Sum)을 구함
+    sumA = sum of all elements in A
+    sumB = sum of all elements in B
+    
+    // 2. 두 배열의 전체 합이 다르거나, 합이 홀수면 공평한 분할이 불가능함
+    // (절반으로 나누었을 때 정수가 나와야 함)
+    if sumA != sumB OR sumA % 2 != 0:
+        return 0
+        
+    target = sumA / 2
+    count = 0
+    leftSumA = 0
+    leftSumB = 0
+    
+    // 3. 분할점 K를 0부터 n-2까지 이동하며 확인 (최소 한 원소는 오른쪽에 남겨야 함)
+    for i from 0 to n - 2:
+        leftSumA = leftSumA + A[i]
+        leftSumB = leftSumB + B[i]
+        
+        // A와 B의 왼쪽 구간 합이 모두 목표치(전체 합의 절반)와 같다면
+        // 자동으로 오른쪽 구간의 합도 target과 같아짐
+        if leftSumA == target AND leftSumB == target:
+            count = count + 1
+            
+    return count
 ```
-
-K를 1부터 N-1까지 순회하며 누적합을 갱신하고 조건을 검사한다.
-
-## 시간복잡도
-
-O(n)
-
-## 핵심 포인트
-
-- 네 값이 모두 같다 = 각 배열의 절반 + 두 배열의 왼쪽 절반이 같다
-- 전체 합이 홀수인 배열은 조건을 절대 만족할 수 없음 (2 * prefix == total 불가)
