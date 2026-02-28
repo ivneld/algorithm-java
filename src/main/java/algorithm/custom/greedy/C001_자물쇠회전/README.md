@@ -22,26 +22,33 @@ T를 만들 수 없으면 -1 반환.
 | `"115"` | `"116"` | -1 |
 | `"12345"` | `"12345"` | 0 |
 
-## 접근 방식
-
-i번 위치를 r_i번 회전한다고 하면 아래 연립방정식이 성립한다.
-
+## 정답
 ```
-(S[0] + r0)              mod 10 = T[0]
-(S[1] + r0 + r1)         mod 10 = T[1]
-...
-(S[n-2] + r(n-3) + r(n-2)) mod 10 = T[n-2]
-(S[n-1] + r(n-2))        mod 10 = T[n-1]  ← 검증
+function solveLock(S, T):
+    n = length(S)
+    // 문자열을 정수 배열로 변환
+    current_S = convert_to_int_array(S)
+    target_T = convert_to_int_array(T)
+    
+    total_rotations = 0
+    
+    // 마지막 전(n-2)까지 순차적으로 회전 결정
+    for i from 0 to n - 2:
+        // i번 자리를 target_T[i]로 만들기 위해 필요한 회전 횟수 계산
+        // (목표 - 현재 + 10) % 10 구문을 통해 양수 값 유지
+        rotations_needed = (target_T[i] - current_S[i] + 10) % 10
+        
+        // 결과 누적
+        total_rotations += rotations_needed
+        
+        // i번 자리를 회전하면 i+1번 자리도 함께 회전됨
+        current_S[i+1] = (current_S[i+1] + rotations_needed) % 10
+        
+        // (참고) current_S[i]는 이제 target_T[i]와 같아짐
+    
+    // 마지막 자리 검증: 조작이 불가능한 마지막 자리가 목표와 일치하는지 확인
+    if current_S[n-1] == target_T[n-1]:
+        return total_rotations
+    else:
+        return -1
 ```
-
-왼쪽부터 r_i를 순서대로 유일하게 결정하고, 마지막 자리 조건이 맞지 않으면 -1.
-
-## 시간복잡도
-
-O(n)
-
-## 핵심 포인트
-
-- 각 r_i는 앞 자리의 결과에 따라 유일하게 결정되므로 BFS 불필요
-- 마지막 자리는 조작 불가 → 검증용으로만 사용
-- 나머지 연산 시 음수 방지: `((x % 10) + 10) % 10`
