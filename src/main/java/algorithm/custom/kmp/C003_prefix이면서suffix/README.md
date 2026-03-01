@@ -21,30 +21,28 @@ suffix: b, ab, bab, abab, babab
 공통: ab, abab  →  가장 긴 것은 "abab" → 4 반환
 ```
 
-## 접근 방식
-
-KMP 알고리즘의 실패 함수(pi 배열)를 그대로 활용한다.
-
-`pi[i]` = `s[0..i]` 에서 prefix이자 suffix인 가장 긴 문자열의 길이
-
-따라서 `pi[n-1]` 이 답이다.
-
-## 실패 함수 동작 원리
-
+## 정답
 ```
-s = "ababab"
-i=1: 'b' != 'a'          pi[1] = 0
-i=2: 'a' == 'a'          pi[2] = 1,  j=1
-i=3: 'b' == 'b'          pi[3] = 2,  j=2
-i=4: 'a' == 'a'          pi[4] = 3,  j=3
-i=5: 'b' == 'b'          pi[5] = 4,  j=4  ← 반환
+function solveLongestPrefixSuffix(s):
+    n = length(s)
+    if n == 0: return 0
+    
+    // pi[i]는 0부터 i까지의 부분 문자열에서 일치하는 최장 prefix-suffix 길이
+    pi = array of size n, initialized to 0
+    
+    j = 0 // prefix의 끝을 가리키는 포인터이자 현재까지 일치한 길이
+    
+    // suffix의 끝을 가리키는 포인터 i는 1부터 시작 (자기 자신 제외 조건)
+    for i from 1 to n - 1:
+        // 문자가 일치하지 않으면, 이전 단계에서 일치했던 부분으로 되돌아감
+        while j > 0 AND s[i] != s[j]:
+            j = pi[j - 1]
+            
+        // 문자가 일치하면 길이를 1 증가시키고 pi 배열에 기록
+        if s[i] == s[j]:
+            j = j + 1
+            pi[i] = j
+            
+    // 전체 문자열에 대한 최장 공통 prefix-suffix 길이 반환
+    return pi[n - 1]
 ```
-
-## 시간복잡도
-
-O(n)
-
-## 핵심 포인트
-
-- j가 불일치할 때 `pi[j-1]`로 후퇴하는 것이 핵심 (불필요한 비교 스킵)
-- `pi[n-1]`이 곧 전체 문자열에 대한 답
